@@ -5,6 +5,7 @@ import com.example.vetsandpets.entity.Pet;
 import com.example.vetsandpets.entity.User;
 import com.example.vetsandpets.model.PetDto;
 import com.example.vetsandpets.model.UserDto;
+import com.example.vetsandpets.model.UserResponse;
 import com.example.vetsandpets.service.PetService;
 import com.example.vetsandpets.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity findAll() {
         try {
-            List<UserDto> user = userService.findAll();
+            List<UserResponse> user = userService.findAll();
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,7 +53,18 @@ public class UserController {
     @GetMapping("/{userName}")
     public ResponseEntity findByUserName(@PathVariable String userName) {
         try {
-            UserDto user = userService.findByUserName(userName);
+            UserResponse user = userService.findByUserName(userName);
+            return new ResponseEntity(user, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        try {
+            UserResponse user = userService.updateUser(id, userDto);
             return new ResponseEntity(user, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +82,6 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
 }

@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -23,14 +21,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
-    @Column(name = "surname", nullable = false)
-    private String surname;
-
-    @Column(name = "username", nullable = false)
-    private String userName;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -38,6 +33,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Pet> pets = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public void addPet(Pet pet) {
         pets.add(pet);

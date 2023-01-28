@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class PetDto {
+    private Long id;
     private String name;
     private PetType type;
     private LocalDate lastVisitDate;

@@ -1,6 +1,7 @@
 package com.example.vetsandpets.entity;
 
 import com.example.vetsandpets.model.PetType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -34,6 +35,7 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 
     @Override
