@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -41,7 +42,8 @@ public class DataInitializer implements CommandLineRunner {
         Optional<Role> roleOpt = roleService.createIfNotFound(RoleType.ADMIN);
         Optional<Role> roleOptional = roleService.createIfNotFound(RoleType.USER);
 
-        Set<Role> adminRole = Set.of(roleService.findByName(RoleType.ADMIN));
+        Set<Role> adminRole = new HashSet<>();
+        adminRole.add(roleService.findByName(RoleType.ADMIN));
         try{
         userService.findByUserName("admin");
         }catch (UserNotFoundException e){

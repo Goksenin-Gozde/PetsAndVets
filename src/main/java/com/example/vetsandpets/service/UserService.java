@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -31,7 +34,7 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public List<UserResponse> findAll(){
+    public List<UserResponse> findAll() {
         List<User> users = userRepository.findAll();
         List<UserResponse> userDtos = new ArrayList<>();
         users.forEach((user) -> userDtos.add(Mapper.fromUserToUserResponse(user)));
@@ -46,28 +49,29 @@ public class UserService {
         user.setFullName(userDto.getFullName());
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRoles(Set.of(userRole));
+        Set<Role> role = new java.util.HashSet<>();
+        role.add(userRole);
+        user.setRoles(role);
         return userRepository.save(user);
     }
 
 
-    public UserResponse findByUserName(String userName) {
-        User existingUser = userRepository.findByUsername(userName).orElseThrow(
+    public User findByUserName(String userName) {
+        return userRepository.findByUsername(userName).orElseThrow(
                 () -> new UserNotFoundException("User Not Found")
         );
-        return Mapper.fromUserToUserResponse(existingUser);
     }
 
-    public UserResponse updateUser(Long userId, UserDto userDto){
+    public UserResponse updateUser(Long userId, UserDto userDto) {
         User existingUser = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("User Not Found")
         );
 
-        if(Objects.nonNull(userDto.getFullName())){
+        if (Objects.nonNull(userDto.getFullName())) {
             existingUser.setFullName(userDto.getFullName());
         }
 
-        if(Objects.nonNull(userDto.getPets())){
+        if (Objects.nonNull(userDto.getPets())) {
             existingUser.setPets(userDto.getPets());
         }
 
