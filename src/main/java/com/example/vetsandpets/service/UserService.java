@@ -51,11 +51,10 @@ public class UserService {
     }
 
 
-    public UserResponse findByUserName(String userName) {
-        User existingUser = userRepository.findByUsername(userName).orElseThrow(
+    public User findByUserName(String userName) {
+        return userRepository.findByUsername(userName).orElseThrow(
                 () -> new UserNotFoundException("User Not Found")
         );
-        return Mapper.fromUserToUserResponse(existingUser);
     }
 
     public UserResponse updateUser(Long userId, UserDto userDto){

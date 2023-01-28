@@ -3,6 +3,7 @@ package com.example.vetsandpets.controller;
 
 import com.example.vetsandpets.entity.Pet;
 import com.example.vetsandpets.entity.User;
+import com.example.vetsandpets.exception.AuthorizationError;
 import com.example.vetsandpets.model.PetDto;
 import com.example.vetsandpets.model.UserDto;
 import com.example.vetsandpets.model.UserResponse;
@@ -11,8 +12,10 @@ import com.example.vetsandpets.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,10 +32,15 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity findAll() {
+    public ResponseEntity findAll(Authentication authentication) {
         try {
-            List<UserResponse> user = userService.findAll();
-            return ResponseEntity.ok(user);
+            List<UserResponse> users;
+            if (authentication.getName().equalsIgnoreCase("admin")) {
+                 users = new ArrayList<>(userService.findAll());
+            }else {
+                throw new AuthorizationError("Not Authorized");
+            }
+            return ResponseEntity.ok(users);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -50,19 +58,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userName}")
-    public ResponseEntity findByUserName(@PathVariable String userName) {
-        try {
-            UserResponse user = userService.findByUserName(userName);
-            return new ResponseEntity(user, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+    public ResponseEntity updateUser(@PathVariable Long id, @RequestBody UserDto userDto, Authentication authentication) {
         try {
             UserResponse user = userService.updateUser(id, userDto);
             return new ResponseEntity(user, HttpStatus.OK);

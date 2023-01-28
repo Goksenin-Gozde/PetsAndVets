@@ -1,6 +1,7 @@
 package com.example.vetsandpets.entity;
 
 import com.example.vetsandpets.model.RoleType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     @ToString.Exclude
+    @JsonIgnore
     private Set<User> users;
 
 }

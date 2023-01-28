@@ -1,33 +1,33 @@
 package com.example.vetsandpets.service;
 
-import com.example.vetsandpets.entity.User;
-import com.example.vetsandpets.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.vetsandpets.helper.JwtUtil;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailService customUserDetailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder){
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthService(CustomUserDetailService customUserDetailService, AuthenticationManager authenticationManager, JwtUtil jwtUtil){
+        this.customUserDetailService = customUserDetailService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
-    public boolean login(String username, String password) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isEmpty()) {
-            return false;
+    public String login(String username, String password) throws Exception {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (BadCredentialsException ex) {
+            throw new Exception("Incorrect username or password", ex);
         }
-
-        User user = userOptional.get();
-
-        return passwordEncoder.matches(password, user.getPassword());
+        final UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
+        return jwtUtil.generateToken(userDetails);
     }
+
 }
