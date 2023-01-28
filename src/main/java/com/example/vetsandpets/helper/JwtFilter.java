@@ -20,11 +20,15 @@ import java.io.IOException;
 @Service
 public class JwtFilter extends GenericFilterBean {
 
-    @Autowired
-    JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+
+    private final CustomUserDetailService userDetailService;
 
     @Autowired
-    CustomUserDetailService userDetailService;
+    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailService userDetailService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailService = userDetailService;
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse
