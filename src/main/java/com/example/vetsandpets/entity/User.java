@@ -50,6 +50,11 @@ public class User {
         pet.setUser(null);
     }
 
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
+        pets.forEach((pet) -> pet.setUser(this));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

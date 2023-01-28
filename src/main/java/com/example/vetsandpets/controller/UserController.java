@@ -34,12 +34,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity findAll(Authentication authentication) {
         try {
-            List<UserResponse> users;
-            if (authentication.getName().equalsIgnoreCase("admin")) {
-                 users = new ArrayList<>(userService.findAll());
-            }else {
-                throw new AuthorizationError("Not Authorized");
-            }
+            List<UserResponse> users = userService.findAll(authentication);
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +56,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity updateUser(@PathVariable Long id, @RequestBody UserDto userDto, Authentication authentication) {
         try {
-            UserResponse user = userService.updateUser(id, userDto);
+            UserResponse user = userService.updateUser(id, userDto, authentication);
             return new ResponseEntity(user, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
